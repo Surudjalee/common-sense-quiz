@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ควิซ Common Sense</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.1em;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>ควิซ Common Sense</h1>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "ถ้าคุณตื่นนอนตอน 7 โมงเช้า และใช้เวลา 1 ชั่วโมงในการเตรียมตัว คุณจะออกจากบ้านได้ตอนกี่โมง?",
+                options: ["8:00 น.", "7:30 น.", "9:00 น.", "6:00 น."],
+                answer: "8:00 น."
+            },
+            {
+                question: "อะไรคือสีที่เกิดจากการผสมสีแดงกับสีน้ำเงิน?",
+                options: ["เขียว", "ม่วง", "เหลือง", "ส้ม"],
+                answer: "ม่วง"
+            },
+            {
+                question: "ถ้าคุณมีแอปเปิ้ล 3 ลูก และเพื่อนให้เพิ่มอีก 2 ลูก คุณจะมีแอปเปิ้ลทั้งหมดกี่ลูก?",
+                options: ["3 ลูก", "4 ลูก", "5 ลูก", "6 ลูก"],
+                answer: "5 ลูก"
+            },
+            {
+                question: "วันอะไรที่มาหลังจากวันจันทร์?",
+                options: ["วันอาทิตย์", "วันอังคาร", "วันพุธ", "วันศุกร์"],
+                answer: "วันอังคาร"
+            },
+            {
+                question: "ถ้าฝนตก คุณควรทำอะไรเพื่อไม่ให้เปียก?",
+                options: ["ใส่แว่นกันแดด", "กางร่ม", "ใส่ถุงเท้า", "วิ่งเร็วๆ"],
+                answer: "กางร่ม"
+            },
+            {
+                question: "ถ้าคุณต้องเดินทางไปทำงานและรถไฟมาทุก 15 นาที คุณควรวางแผนถึงสถานีกี่นาทีก่อนรถไฟขบวนที่ต้องการ?",
+                options: ["5 นาที", "10 นาที", "20 นาที", "30 นาที"],
+                answer: "10 นาที"
+            },
+            {
+                question: "ถ้าคุณพบของมีคมตกอยู่บนพื้น คุณควรทำอย่างไร?",
+                options: ["เตะออกไป", "เก็บด้วยมือเปล่า", "ใช้ผ้าหรืออุปกรณ์เก็บ", "ปล่อยทิ้งไว้"],
+                answer: "ใช้ผ้าหรืออุปกรณ์เก็บ"
+            },
+            {
+                question: "ถ้าคุณลืมกุญแจไว้ในบ้านและไม่มีใครอยู่ คุณควรทำอะไรเป็นอันดับแรก?",
+                options: ["พังประตูเข้าไป", "โทรหาช่างกุญแจ", "นอนรอหน้าบ้าน", "ปีนหน้าต่าง"],
+                answer: "โทรหาช่างกุญแจ"
+            },
+            {
+                question: "ถ้าคุณยืมของจากเพื่อนบ้าน คุณควรทำอย่างไรเมื่อใช้เสร็จ?",
+                options: ["เก็บไว้ใช้ต่อ", "คืนให้เจ้าของในสภาพดี", "ทิ้งไว้หน้าบ้าน", "ให้คนอื่นยืมต่อ"],
+                answer: "คืนให้เจ้าของในสภาพดี"
+            },
+            {
+                question: "ถ้าเพื่อนร่วมงานพูดอะไรที่ทำให้คุณไม่พอใจ คุณควรทำอย่างไร?",
+                options: ["ตะโกนตอบกลับ", "เดินหนีทันที", "พูดคุยอย่างใจเย็นเพื่อแก้ปัญหา", "บ่นกับคนอื่น"],
+                answer: "พูดคุยอย่างใจเย็นเพื่อแก้ปัญหา"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const resultElement = document.getElementById('result');
+
+        function loadQuestion() {
+            const currentQuiz = quizData[currentQuestion];
+            questionElement.textContent = currentQuiz.question;
+            optionsElement.innerHTML = '';
+
+            currentQuiz.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.addEventListener('click', () => selectOption(option));
+                optionsElement.appendChild(button);
+            });
+        }
+
+        function selectOption(selected) {
+            const currentQuiz = quizData[currentQuestion];
+            if (selected === currentQuiz.answer) {
+                score++;
+            }
+
+            currentQuestion++;
+
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            questionElement.style.display = 'none';
+            optionsElement.style.display = 'none';
+            resultElement.style.display = 'block';
+            resultElement.innerHTML = `คุณได้คะแนน ${score} จาก ${quizData.length} คะแนน! <br>`;
+            if (score === quizData.length) {
+                resultElement.innerHTML += "ยอดเยี่ยม! คุณตอบถูกทุกข้อ!";
+            } else if (score >= quizData.length / 2) {
+                resultElement.innerHTML += "ดีมาก! ลองเล่นอีกครั้งเพื่อคะแนนเต็ม!";
+            } else {
+                resultElement.innerHTML += "ไม่เป็นไร ลองเล่นใหม่เพื่อพัฒนาคะแนน!";
+            }
+            const restartButton = document.createElement('button');
+            restartButton.textContent = 'เล่นใหม่';
+            restartButton.addEventListener('click', restartQuiz);
+            resultElement.appendChild(restartButton);
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            questionElement.style.display = 'block';
+            optionsElement.style.display = 'flex';
+            resultElement.style.display = 'none';
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
